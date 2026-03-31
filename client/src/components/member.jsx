@@ -1,219 +1,280 @@
-import React, { useState, useEffect } from "react";
-import { Armchair } from "lucide-react";
-import {useAuth} from "../lib/authContext";
+import React, { useState, useEffect, useCallback, useRef } from "react";
+import { useAuth } from "../lib/authContext";
 import { supabase } from "../lib/supabase";
 
-const SeatSelector = ({ onSeatReserved, hasReservedSeat }) => {
-  const { user, loading } = useAuth();
-  const [selectedSeat, setSelectedSeat] = useState(null);
+const TOTAL_SEATS = 100;
+const EVENT_ID = "2026-04-15-live-call";
+const MIN_MS_BETWEEN_RESERVE_ATTEMPTS = 3500;
+const MAX_SEAT_COLLISION_RETRIES = 8;
 
-  const TOTAL_SEATS = 16;
-  const EVENT_ID = "2026-01-15-live-call";
-  const [seats, setSeats] = useState([]);
+function pickNextSeatNumber(bookedNumbers) {
+  const taken = new Set(bookedNumbers);
+  for (let n = 1; n <= TOTAL_SEATS; n++) {
+    if (!taken.has(n)) return n;
+  }
+  return null;
+}
 
-  useEffect(() => {
-    let isMounted = true;
+/** Visual urgency tier for remaining seats (not boring grey). */
+function seatAvailabilityTier(remaining, total) {
+  if (total <= 0 || remaining <= 0) return "soldout";
+  const ratio = remaining / total;
+  if (ratio > 0.5) return "plenty";
+  if (ratio > 0.25) return "good";
+  if (ratio > 0.1) return "low";
+  return "critical";
+}
 
-    const loadSeats = async () => {
-      try {
-        const { data, error } = await supabase
-          .from("seat_reservations")
-          .select("seat_number")
-          .eq("event_id", EVENT_ID);
+async function fetchBookedSeatNumbers() {
+  const { data, error } = await supabase
+    .from("seat_reservations")
+    .select("seat_number")
+    .eq("event_id", EVENT_ID);
 
-        if (error) {
-          console.error("Failed to load seats:", error);
-        }
+  if (error) {
+    console.error("Failed to load seats:", error);
+    return null;
+  }
+  return (data || []).map((r) => r.seat_number).filter(Number.isFinite);
+}
 
-        const bookedSeats = data ? data.map(r => r.seat_number) : [];
+async function fetchMyReservationSeat(userId) {
+  const { data, error } = await supabase
+    .from("seat_reservations")
+    .select("seat_number")
+    .eq("event_id", EVENT_ID)
+    .eq("user_id", userId)
+    .maybeSingle();
 
-        const generatedSeats = Array.from(
-          { length: TOTAL_SEATS },
-          (_, i) => ({
-            id: i + 1,
-            booked: bookedSeats.includes(i + 1),
-          })
-        );
+  if (error) {
+    console.error("Failed to check existing reservation:", error);
+    return null;
+  }
+  return data?.seat_number ?? null;
+}
 
-        if (isMounted) {
-          setSeats(generatedSeats);
-        }
-      } catch (err) {
-        if (err.name !== "AbortError") {
-          console.error(err);
-        }
-      }
-    };
+const SeatOneClick = ({
+  remaining,
+  user,
+  authLoading,
+  isBooking,
+  rateHint,
+  onReserveClick,
+}) => {
+  const tier = seatAvailabilityTier(remaining, TOTAL_SEATS);
+  const soldOut = remaining <= 0;
 
-    loadSeats();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  const handleReserve = () => {
-    // Allow logged-out users to proceed to auth even while loading
-    if (loading && user) return;
-
+  const handlePrimaryClick = () => {
+    if (soldOut || isBooking || authLoading) return;
     if (!user) {
       window.location.href = "/auth";
       return;
     }
-
-    onSeatReserved({
-      seatNumber: selectedSeat,
-      userId: user.id,
-    });
-
-    console.log("Calling onSeatReserved", {
-      seatNumber: selectedSeat,
-      userId: user.id,
-    });
+    onReserveClick();
   };
+
+  let buttonLabel = "Reserve my seat";
+  if (soldOut) {
+    buttonLabel = "Sold out";
+  } else if (authLoading) {
+    buttonLabel = "Checking session…";
+  } else if (!user) {
+    buttonLabel = "Log in to reserve your seat";
+  } else if (isBooking) {
+    buttonLabel = "Saving your spot…";
+  }
+
+  const disabled = soldOut || isBooking || authLoading;
 
   return (
     <div className="seat-selector" id="seat-selector">
       <p className="seat-selector__meta">
-        <strong>Next Live Meet:</strong> January 15th, 2026 ·{" "}
-        {TOTAL_SEATS - seats.filter(s => s.booked).length} seats remaining
+        <span className="seat-selector__meta-label">Launch Meeting April 15th, 2026</span>
+        <span
+          className="seat-counter-badge"
+          data-tier={tier}
+          role="status"
+          aria-live="polite"
+        >
+          <span className="seat-counter-badge__value">{Math.max(0, remaining)}</span>
+          <span className="seat-counter-badge__suffix"> / {TOTAL_SEATS} seats left</span>
+        </span>
       </p>
 
-      <div className="seat-grid" style={{
-        maxWidth: 300,
-        margin: "0 auto",
-      }}>
-        {seats.map((seat) => {
-          const isSelected = selectedSeat === seat.id;
-
-          return (
-            <button
-              key={seat.id}
-              disabled={seat.booked}
-              onClick={() => setSelectedSeat(seat.id)}
-              className={`seat seat--circle ${seat.booked ? "seat--booked" : ""} ${isSelected ? "seat--selected" : ""}`}
-              aria-label={`Seat ${seat.id}`}
-              title={`Seat ${seat.id}`}
-              style={{
-                width: 44,
-                height: 44,
-                borderRadius: "50%",
-                background: seat.booked
-                  ? "#e5e7eb"
-                  : isSelected
-                  ? "#fde68a"
-                  : "#374151",
-                border: isSelected ? "2px solid #f59e0b" : "1px solid #6b7280",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                transition: "all 0.2s ease",
-              }}
-            >
-              <Armchair
-                size={18}
-                strokeWidth={2}
-                className="seat-icon"
-                color={
-                  seat.booked
-                    ? "#9ca3af"
-                    : isSelected
-                    ? "#92400e"
-                    : "#e5e7eb"
-                }
-              />
-            </button>
-          );
-        })}
-      </div>
+      {rateHint ? (
+        <p className="seat-rate-hint" role="status">
+          {rateHint}
+        </p>
+      ) : null}
 
       <button
         type="button"
         className="seat-cta"
-        disabled={!selectedSeat || (loading && user)}
-        onClick={handleReserve}
+        disabled={disabled}
+        onClick={handlePrimaryClick}
       >
-        {!selectedSeat
-          ? "Select a seat"
-          : loading
-          ? "Checking authentication..."
-          : !user
-          ? "Log in to reserve your seat"
-          : `Reserve seat ${selectedSeat}`}
+        {buttonLabel}
       </button>
     </div>
   );
 };
 
 const Member = () => {
-  const EVENT_ID = "2026-01-15-live-call";
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
 
+  const [bookedSeats, setBookedSeats] = useState([]);
   const [reservedSeat, setReservedSeat] = useState(null);
+  const [isBooking, setIsBooking] = useState(false);
+  const [rateHint, setRateHint] = useState("");
+
+  const lastAttemptEndedAt = useRef(0);
+
+  const loadBookedSeats = useCallback(async () => {
+    const nums = await fetchBookedSeatNumbers();
+    if (nums) setBookedSeats(nums);
+  }, []);
 
   useEffect(() => {
-    if (!user) return;
+    loadBookedSeats();
 
-    const loadMySeat = async () => {
-      const { data, error } = await supabase
-        .from("seat_reservations")
-        .select("seat_number")
-        .eq("event_id", EVENT_ID)
-        .eq("user_id", user.id)
-        .single();
+    const channel = supabase
+      .channel(`seat_reservations:${EVENT_ID}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "seat_reservations" },
+        (payload) => {
+          const row = payload.new && Object.keys(payload.new).length ? payload.new : payload.old;
+          if (row?.event_id === EVENT_ID) loadBookedSeats();
+        }
+      )
+      .subscribe();
 
-      if (!error && data) {
-        setReservedSeat(data.seat_number);
-      }
+    return () => {
+      supabase.removeChannel(channel);
     };
+  }, [loadBookedSeats]);
 
-    loadMySeat();
-  }, [user]);
-
-  const onSeatReserved = async ({ seatNumber, userId }) => {
-    const { error } = await supabase.from("seat_reservations").insert({
-      event_id: EVENT_ID,
-      seat_number: seatNumber,
-      user_id: userId,
-    });
-
-    if (error) {
-      console.error("Failed to reserve seat:", error);
-      alert(error.message);
+  useEffect(() => {
+    if (!user) {
+      setReservedSeat(null);
       return;
     }
 
-    // Hard refresh seats by reloading the page for now
-    // window.location.reload();
-    setReservedSeat(seatNumber);
+    (async () => {
+      const existing = await fetchMyReservationSeat(user.id);
+      if (existing != null) setReservedSeat(existing);
+    })();
+  }, [user]);
+
+  const remaining = Math.max(0, TOTAL_SEATS - bookedSeats.length);
+
+  const handleReserveClick = async () => {
+    setRateHint("");
+
+    if (authLoading) return;
+    if (!user) {
+      window.location.href = "/auth";
+      return;
+    }
+
+    const now = Date.now();
+    if (now - lastAttemptEndedAt.current < MIN_MS_BETWEEN_RESERVE_ATTEMPTS) {
+      setRateHint("Please wait a few seconds before trying again.");
+      return;
+    }
+
+    if (isBooking) return;
+
+    setIsBooking(true);
+    try {
+      const already = await fetchMyReservationSeat(user.id);
+      if (already != null) {
+        setReservedSeat(already);
+        return;
+      }
+
+      let booked = await fetchBookedSeatNumbers();
+      if (!booked) {
+        setRateHint("Could not load availability. Try again shortly.");
+        return;
+      }
+
+      let nextSeat = pickNextSeatNumber(booked);
+      if (nextSeat == null) {
+        setRateHint("All seats are taken.");
+        await loadBookedSeats();
+        return;
+      }
+
+      for (let attempt = 0; attempt < MAX_SEAT_COLLISION_RETRIES; attempt++) {
+        const { error } = await supabase.from("seat_reservations").insert({
+          event_id: EVENT_ID,
+          seat_number: nextSeat,
+          user_id: user.id,
+        });
+
+        if (!error) {
+          setReservedSeat(nextSeat);
+          setBookedSeats((prev) =>
+            [...new Set([...prev, nextSeat])].sort((a, b) => a - b)
+          );
+          return;
+        }
+
+        if (error.code === "23505") {
+          const mine = await fetchMyReservationSeat(user.id);
+          if (mine != null) {
+            setReservedSeat(mine);
+            return;
+          }
+          booked = await fetchBookedSeatNumbers();
+          if (!booked) break;
+          nextSeat = pickNextSeatNumber(booked);
+          if (nextSeat == null) {
+            setRateHint("All seats are taken.");
+            await loadBookedSeats();
+            return;
+          }
+          continue;
+        }
+
+        console.error("Failed to reserve seat:", error);
+        alert(error.message || "Could not complete reservation.");
+        await loadBookedSeats();
+        return;
+      }
+
+      setRateHint("Could not assign a seat (high demand). Try again in a moment.");
+      await loadBookedSeats();
+    } finally {
+      lastAttemptEndedAt.current = Date.now();
+      setIsBooking(false);
+    }
   };
 
   return (
     <div className="membership-wrapper">
       <section className="membership-card">
-        <h2 className="membership-card__title">
-          Reserve your seat
-        </h2>
+        <h2 className="membership-card__title">Reserve your seat</h2>
 
         <div className="membership-divider" />
 
-        {reservedSeat ? (
+        {reservedSeat != null ? (
           <div className="seat-confirmation">
-            <h3 className="seat-confirmation__title">
-              🎉 Seat Reserved
-            </h3>
+            <h3 className="seat-confirmation__title">You&apos;re in</h3>
             <p className="seat-confirmation__text">
-              You’ve successfully reserved <strong>Seat {reservedSeat}</strong> for the
-              January 15th, 2026 live session.
-            </p>
-            <p className="seat-confirmation__subtext">
-              We’ll remind you before the event starts.
+              Your spot is saved for the April 15th, 2026 launch meeting. We&apos;ll remind you before
+              it starts.
             </p>
           </div>
         ) : (
-          <SeatSelector
-            onSeatReserved={onSeatReserved}
-            hasReservedSeat={false}
+          <SeatOneClick
+            remaining={remaining}
+            user={user}
+            authLoading={authLoading}
+            isBooking={isBooking}
+            rateHint={rateHint}
+            onReserveClick={handleReserveClick}
           />
         )}
       </section>

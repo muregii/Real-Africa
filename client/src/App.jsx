@@ -17,9 +17,9 @@ import ResetPassword from "./pages/ResetPassword";
 import LoadingSpinner from "./components/LoadingSpinner";
 import Communities from './pages/communities'
 import CommunityPage from './pages/CommunityPage';
-import AdminLayout from "../admin/AdminLayout";
-import AdminDashboard from "../admin/AdminDashboard";
-import AdminUsers from "../admin/AdminUsers";
+import AdminLayout from "../Admin/AdminLayout";
+import AdminDashboard from "../Admin/AdminDashboard";
+import AdminUsers from "../Admin/AdminUsers";
 import { CoursesPage, CoursePlayerPage } from "./pages/get-mentored";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";

@@ -185,6 +185,7 @@ const Navbar = ({ onGetFeatured }) => {
 
         .navbar__more-wrapper {
           position: relative;
+          padding: 12px 0;
         }
 
         .navbar__more-btn {
@@ -213,28 +214,31 @@ const Navbar = ({ onGetFeatured }) => {
 
         .navbar__more-dropdown {
           position: absolute;
-          top: calc(100% + 14px);
+          top: 100%;
           left: 50%;
           transform: translateX(-50%);
-          background: #ffffff;
-          border-radius: 12px;
-          box-shadow: 0 10px 32px rgba(0, 0, 0, 0.12);
-          min-width: 180px;
-          padding: 8px 0;
+          padding-top: 8px;
           z-index: 1100;
           opacity: 0;
           pointer-events: none;
-          transition: opacity 0.15s ease, transform 0.15s ease;
-          transform: translateX(-50%) translateY(-6px);
+          transition: opacity 0.15s ease;
         }
 
         .navbar__more-dropdown.show {
           opacity: 1;
           pointer-events: auto;
-          transform: translateX(-50%) translateY(0);
         }
 
-        .navbar__more-dropdown a {
+        .navbar__more-dropdown-inner {
+          background: #ffffff;
+          border-radius: 12px;
+          box-shadow: 0 10px 32px rgba(0, 0, 0, 0.12);
+          min-width: 180px;
+          padding: 8px 0;
+          overflow: hidden;
+        }
+
+        .navbar__more-dropdown-inner a {
           display: block;
           padding: 10px 20px;
           font-family: var(--font-grotesk);
@@ -245,11 +249,11 @@ const Navbar = ({ onGetFeatured }) => {
           transition: background 0.12s ease;
         }
 
-        .navbar__more-dropdown a:hover {
+        .navbar__more-dropdown-inner a:hover {
           background: #f8fafc;
         }
 
-        .navbar__more-dropdown a::after {
+        .navbar__more-dropdown-inner a::after {
           display: none !important;
         }
 
@@ -438,10 +442,12 @@ const Navbar = ({ onGetFeatured }) => {
                 </svg>
               </button>
               <div className={`navbar__more-dropdown${moreOpen ? " show" : ""}`}>
-                <Link to="/articles" onClick={() => setMoreOpen(false)}>Articles</Link>
-                <Link to="/interviews" onClick={() => setMoreOpen(false)}>Interviews</Link>
-                <Link to="/opportunities" onClick={() => setMoreOpen(false)}>Opportunities</Link>
-                <Link to="/featured-ceos" onClick={() => setMoreOpen(false)}>Featured CEOs</Link>
+                <div className="navbar__more-dropdown-inner">
+                  <Link to="/articles" onClick={() => setMoreOpen(false)}>Articles</Link>
+                  <Link to="/interviews" onClick={() => setMoreOpen(false)}>Interviews</Link>
+                  <Link to="/opportunities" onClick={() => setMoreOpen(false)}>Opportunities</Link>
+                  <Link to="/featured-ceos" onClick={() => setMoreOpen(false)}>Featured CEOs</Link>
+                </div>
               </div>
             </div>
 

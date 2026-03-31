@@ -106,14 +106,16 @@ And this journey is only just beginning.`,
     title: "From Curiosity to Inclusion: Elly Savatia's Journey in Tech",
     author: "Raydon Muregi",
     date: "January 2, 2026",
-    heroImage: "/assets/elly.jpg",
+    heroImage: "/assets/Elly-Savatia.jpg",
     summary:
       "Elly Savatia shares her journey from curiosity-driven learning to becoming a champion for inclusive technology.",
-    body: `Elly Savatia's story is one of resilience, persistence, and advocacy.
+    body: `**Elly Savatia grew up in western Kenya taking apart electronics as a kid, just trying to understand how things worked.** That same instinct — to look at a broken system and ask *why* — eventually led him to a conference in northeastern Kenya, where he watched a single interpreter try to serve over 300 deaf students. The image didn't leave him.
 
-She speaks candidly about breaking into the tech industry, navigating systemic barriers, and using her platform to promote accessibility and inclusion across African tech ecosystems.
+In 2023, he founded Signvrse and launched Terp 360, Africa's first AI-powered sign language translation platform — using 3D avatars to interpret text and speech into Kenyan Sign Language at scale, what he describes as "Google Translate for sign language." Before getting there, he'd already captained Kenya's national robotics team at a global competition in Dubai, co-founded and shuttered a predecessor startup, and built one of the largest KSL datasets on the continent.
 
-This conversation highlights why diversity is not just a moral imperative, but a competitive advantage.`,
+In 2025, Savatia won the Africa Engineering Innovation Prize — a £50,000 award from the UK's Royal Academy of Engineering — one of a string of recognitions that also include a Mandela Washington Fellowship, a UNICEF innovation award, and a Presidential Innovation Award from Kenya. Terp 360 has already reached over 2,000 users, with a mobile version and subscription model in the works.
+
+What makes Elly's story stick isn't the accolades. It's the philosophy underneath them: that you don't build *for* communities, you build *with* them — and that if your technology doesn't serve the people most left behind, it isn't really progress.`,
   },
   {
     slug: "scale-leadership-peter-nduati",
@@ -192,76 +194,6 @@ It is the kind of counsel that lingers long after the conversation ends. Not bec
 And sometimes, the most powerful thing a mentor can say is the thing nobody else is willing to.
 
 *If you don't trust yourself, take a job.*`,
-  },
-  {
-    slug: "ai-powered-hr-tool",
-    title: "The Story Behind Africa's First AI-Powered HR Tool",
-    author: "Debbie L.",
-    date: "January 27, 2025",
-    heroImage: "/assets/hr-ai.jpg",
-    summary:
-      "An inside look at how Africa's first AI-powered HR platform was built and the problems it set out to solve.",
-    body: `This interview explores the origins of Africa's first AI-powered HR tool, from identifying talent gaps to deploying machine learning at scale.
-
-The founders discuss ethical AI, hiring bias, and why automation must always be paired with human judgment.
-
-The story offers a rare glimpse into product-building under real-world constraints.`,
-  },
-  {
-    slug: "ugandan-engineer-journey",
-    title: "Women in Tech: A Ugandan Engineer's Journey to Global Leadership",
-    author: "Debbie L.",
-    date: "February 10, 2025",
-    heroImage: "/assets/uganda.jpg",
-    summary:
-      "A Ugandan engineer reflects on her rise to global leadership and the importance of representation in tech.",
-    body: `From Kampala to global boardrooms, this interview traces a remarkable career journey.
-
-She shares lessons on mentorship, confidence, and navigating male-dominated spaces while staying grounded in purpose.
-
-Her story underscores the power of visibility and community in shaping the next generation of women in tech.`,
-  },
-  {
-    slug: "vc-reveals-funding",
-    title: "What Investors Really Want: A VC Reveals What Gets Funded in Africa",
-    author: "Debbie L.",
-    date: "March 5, 2025",
-    heroImage: "/assets/vc.jpg",
-    summary:
-      "A candid conversation with a venture capitalist on what truly drives funding decisions in Africa.",
-    body: `Fundraising myths are everywhere. This interview cuts through them.
-
-A seasoned VC explains how founders can position themselves, what red flags investors watch for, and why traction often matters more than pitch decks.
-
-The discussion provides actionable insight for early-stage founders navigating capital markets.`,
-  },
-  {
-    slug: "african-developers-innovate",
-    title: "Coding with Constraints: How African Developers Innovate Differently",
-    author: "Debbie L.",
-    date: "April 18, 2025",
-    heroImage: "/assets/developers.jpg",
-    summary:
-      "African developers are innovating under constraints and that is their competitive edge.",
-    body: `Limited infrastructure, fragmented markets, and scarce resources have forced African developers to think differently.
-
-This interview explores how constraint-driven innovation leads to robust, adaptable solutions that often outperform their global counterparts.
-
-It is a powerful reminder that context breeds creativity.`,
-  },
-  {
-    slug: "pan-african-cto",
-    title: "Beyond Borders: The Pan-African CTO Building Across Five Countries",
-    author: "Debbie L.",
-    date: "May 22, 2025",
-    heroImage: "/assets/cto.jpg",
-    summary:
-      "One CTO shares the realities of building distributed tech teams across Africa.",
-    body: `Operating across borders introduces cultural, regulatory, and logistical complexity.
-
-In this interview, a Pan-African CTO discusses remote leadership, cross-border hiring, and aligning teams around shared values despite geographic distance.
-
-The insights are invaluable for companies thinking beyond single-market expansion.`,
   },
   {
     slug: "navigating-borders-g-o-ouma",

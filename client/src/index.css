@@ -994,8 +994,87 @@ body {
 }
 
 .seat-selector__meta {
-  color: #cbd5e1;
-  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.seat-selector__meta-label {
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.9rem;
+  color: #4b5563;
+}
+
+.seat-counter-badge {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.15rem;
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  font-family: "Space Grotesk", sans-serif;
+  font-weight: 700;
+  line-height: 1.2;
+  border-width: 2px;
+  border-style: solid;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.seat-counter-badge__value {
+  font-size: 1.35rem;
+  letter-spacing: -0.02em;
+}
+
+.seat-counter-badge__suffix {
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+/* Availability cues: strong color, not washed-out grey */
+.seat-counter-badge[data-tier="plenty"] {
+  color: #047857;
+  background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+  border-color: #34d399;
+}
+
+.seat-counter-badge[data-tier="good"] {
+  color: #0e7490;
+  background: linear-gradient(135deg, #cffafe 0%, #a5f3fc 100%);
+  border-color: #22d3ee;
+}
+
+.seat-counter-badge[data-tier="low"] {
+  color: #b45309;
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border-color: #f59e0b;
+}
+
+.seat-counter-badge[data-tier="critical"] {
+  color: #9a3412;
+  background: linear-gradient(135deg, #ffedd5 0%, #fed7aa 100%);
+  border-color: #f97316;
+}
+
+.seat-counter-badge[data-tier="soldout"] {
+  color: #991b1b;
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  border-color: #f87171;
+}
+
+.seat-rate-hint {
+  margin: 0 0 0.5rem;
+  font-family: "Space Grotesk", sans-serif;
+  font-size: 0.85rem;
+  color: #b45309;
+  text-align: center;
+}
+
+.seat-cta:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
 }
 
 .seat-grid {
@@ -1938,7 +2017,7 @@ body {
 
 /* Hero */
 .travel-hero {
-  background: url('/images/travel-hero.jpg') center/cover no-repeat;
+  background: url('/assets/travel.jpeg') center/cover no-repeat;
   padding: 4rem 2rem;
   text-align: center;
   color: #fff;
