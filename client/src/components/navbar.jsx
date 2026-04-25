@@ -662,6 +662,10 @@ const Navbar = ({ onGetFeatured }) => {
           to="/communities"
           className="mobile-cta"
           state={{ from: "mentored" }}
+          onClick={() => {
+            setOpen(false);
+            setIsMobileNavHidden(true);
+          }}
         >
           Explore Communities
         </Link>
@@ -671,6 +675,10 @@ const Navbar = ({ onGetFeatured }) => {
             to="/auth"
             className="mobile-cta"
             state={{ from: location.pathname }}
+            onClick={() => {
+              setOpen(false);
+              setIsMobileNavHidden(true);
+            }}
           >
             Log in
           </Link>
