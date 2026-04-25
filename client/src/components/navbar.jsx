@@ -43,6 +43,19 @@ const Navbar = ({ onGetFeatured }) => {
     touchCurrentYRef.current = null;
   };
 
+  const closeMobileMenu = (hideNavbar = false) => {
+    setOpen(false);
+    if (hideNavbar) {
+      setIsMobileNavHidden(true);
+    }
+  };
+
+  const handleMobileMenuInteractionCapture = (event) => {
+    const actionableTarget = event.target.closest("a,button");
+    if (!actionableTarget) return;
+    closeMobileMenu(true);
+  };
+
   useEffect(() => {
     const handleScroll = () => {
       if (window.innerWidth > 900) {
@@ -86,6 +99,14 @@ const Navbar = ({ onGetFeatured }) => {
       window.removeEventListener("resize", handleResize);
     };
   }, [open]);
+
+  useEffect(() => {
+    setOpen(false);
+    setMoreOpen(false);
+    if (window.innerWidth <= 900) {
+      setIsMobileNavHidden(true);
+    }
+  }, [location.pathname]);
 
   
   return (
@@ -626,22 +647,23 @@ const Navbar = ({ onGetFeatured }) => {
       {/* Mobile Dropdown */}
       <div
         className={`mobile-menu ${open ? "open" : ""}`}
+        onClickCapture={handleMobileMenuInteractionCapture}
         onTouchStart={handleMenuTouchStart}
         onTouchMove={handleMenuTouchMove}
         onTouchEnd={handleMenuTouchEnd}
       >
-        <Link onClick={() => setOpen(false)} to="/">Home</Link>
-        <Link onClick={() => setOpen(false)} to="/about-us">About Us</Link>
-        <Link onClick={() => setOpen(false)} to="/travel">Travel</Link>
-        <Link onClick={() => setOpen(false)} to="/articles">Articles</Link>
-        <Link onClick={() => setOpen(false)} to="/interviews">Interviews</Link>
-        <Link onClick={() => setOpen(false)} to="/opportunities">Opportunities</Link>
+        <Link onClick={() => closeMobileMenu()} to="/">Home</Link>
+        <Link onClick={() => closeMobileMenu()} to="/about-us">About Us</Link>
+        <Link onClick={() => closeMobileMenu()} to="/travel">Travel</Link>
+        <Link onClick={() => closeMobileMenu()} to="/articles">Articles</Link>
+        <Link onClick={() => closeMobileMenu()} to="/interviews">Interviews</Link>
+        <Link onClick={() => closeMobileMenu()} to="/opportunities">Opportunities</Link>
         
         
     
         <button
           onClick={() => {
-            setOpen(false);
+            closeMobileMenu();
             onGetFeatured();
           }}
           style={{
@@ -662,10 +684,7 @@ const Navbar = ({ onGetFeatured }) => {
           to="/communities"
           className="mobile-cta"
           state={{ from: "mentored" }}
-          onClick={() => {
-            setOpen(false);
-            setIsMobileNavHidden(true);
-          }}
+          onClick={() => closeMobileMenu(true)}
         >
           Explore Communities
         </Link>
@@ -675,10 +694,7 @@ const Navbar = ({ onGetFeatured }) => {
             to="/auth"
             className="mobile-cta"
             state={{ from: location.pathname }}
-            onClick={() => {
-              setOpen(false);
-              setIsMobileNavHidden(true);
-            }}
+            onClick={() => closeMobileMenu(true)}
           >
             Log in
           </Link>
