@@ -8,7 +8,6 @@ import AccountMenu from "./AccountMenu";
 const Navbar = ({ onGetFeatured }) => {
   const [open, setOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
-  const [isMobileNavHidden, setIsMobileNavHidden] = useState(false);
   const touchStartYRef = useRef(null);
   const touchCurrentYRef = useRef(null);
   const lastScrollYRef = useRef(0);
@@ -43,23 +42,19 @@ const Navbar = ({ onGetFeatured }) => {
     touchCurrentYRef.current = null;
   };
 
-  const closeMobileMenu = (hideNavbar = false) => {
+  const closeMobileMenu = () => {
     setOpen(false);
-    if (hideNavbar) {
-      setIsMobileNavHidden(true);
-    }
   };
 
   const handleMobileMenuInteractionCapture = (event) => {
     const actionableTarget = event.target.closest("a,button");
     if (!actionableTarget) return;
-    closeMobileMenu(true);
+    closeMobileMenu();
   };
 
   useEffect(() => {
     const handleScroll = () => {
       if (window.innerWidth > 900) {
-        setIsMobileNavHidden(false);
         lastScrollYRef.current = window.scrollY;
         return;
       }
@@ -68,27 +63,14 @@ const Navbar = ({ onGetFeatured }) => {
 
       if (open) {
         setOpen(false);
-        setIsMobileNavHidden(false);
         lastScrollYRef.current = currentY;
         return;
-      }
-
-      if (currentY <= 8) {
-        setIsMobileNavHidden(false);
-      } else if (currentY < lastScrollYRef.current - 8) {
-        setIsMobileNavHidden(true);
-      } else if (currentY > lastScrollYRef.current + 8) {
-        setIsMobileNavHidden(false);
       }
 
       lastScrollYRef.current = currentY;
     };
 
-    const handleResize = () => {
-      if (window.innerWidth > 900) {
-        setIsMobileNavHidden(false);
-      }
-    };
+    const handleResize = () => {};
 
     lastScrollYRef.current = window.scrollY;
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -103,9 +85,9 @@ const Navbar = ({ onGetFeatured }) => {
   useEffect(() => {
     setOpen(false);
     setMoreOpen(false);
-    if (window.innerWidth <= 900) {
-      setIsMobileNavHidden(true);
-    }
+    requestAnimationFrame(() => {
+      lastScrollYRef.current = window.scrollY;
+    });
   }, [location.pathname]);
 
   
@@ -118,23 +100,30 @@ const Navbar = ({ onGetFeatured }) => {
         }
         :root {
           --font-grotesk: "Space Grotesk", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+          --navbar-height: 72px;
         }
         *, *::before, *::after {
           box-sizing: border-box;
         }
         .navbar {
-          --navbar-height: 72px;
           height: 72px;
           padding: 0 24px;
           background: linear-gradient(90deg, #1f2230 0%, #232536 100%);
           display: flex;
           align-items: center;
           justify-content: flex-start;
-          position: relative;
-          z-index: 1001;
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          z-index: 3000;
           box-sizing: border-box;
           width: 100%;
           overflow: visible;
+          display: flex !important;
+          visibility: visible !important;
+          opacity: 1 !important;
+          transform: none !important;
         }
 
         .navbar__logo {
@@ -512,15 +501,18 @@ const Navbar = ({ onGetFeatured }) => {
 /* Responsive */
 @media (max-width: 900px) {
   .navbar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    transition: transform 0.22s ease;
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: none !important;
+    pointer-events: auto !important;
   }
 
-  .navbar.navbar--mobile-hidden {
-    transform: translateY(-100%);
+  .navbar__logo,
+  .navbar__right {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 
   .mobile-nav-spacer {
@@ -537,8 +529,10 @@ const Navbar = ({ onGetFeatured }) => {
     display: block;
   }
 
-  .navbar {
+  :root {
     --navbar-height: 60px;
+  }
+  .navbar {
     height: 60px;
     padding: 0 12px;
   }
@@ -558,7 +552,18 @@ const Navbar = ({ onGetFeatured }) => {
       `}</style>
 
       {/* Navbar */}
-      <nav className={`navbar ${isMobileNavHidden ? "navbar--mobile-hidden" : ""}`}>
+      <nav
+        className="navbar"
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          zIndex: 3000,
+          transform: "translateY(0)",
+          opacity: 1,
+        }}
+      >
        
         <Link to="/" className="navbar__logo">
           <img src="/assets/logo.png" alt="Real Africa" />
@@ -684,7 +689,7 @@ const Navbar = ({ onGetFeatured }) => {
           to="/communities"
           className="mobile-cta"
           state={{ from: "mentored" }}
-          onClick={() => closeMobileMenu(true)}
+          onClick={() => closeMobileMenu()}
         >
           Explore Communities
         </Link>
@@ -694,7 +699,7 @@ const Navbar = ({ onGetFeatured }) => {
             to="/auth"
             className="mobile-cta"
             state={{ from: location.pathname }}
-            onClick={() => closeMobileMenu(true)}
+            onClick={() => closeMobileMenu()}
           >
             Log in
           </Link>

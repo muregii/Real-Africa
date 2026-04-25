@@ -2251,17 +2251,6 @@ body {
     background: #f3f4f6;
   }
   
-  /* =====================
-     NAVBAR VISIBILITY FIX
-     ===================== */
-  
-  /* Ensure navbar stays above hero */
-  header,
-  .navbar {
-    position: relative;
-    z-index: 10;
-  }
-
   .get-mentored-page {
     position: relative;
   }

@@ -118,13 +118,6 @@ export default function Communities() {
     }, []);
     return (
       <div className="discover-page">
-        {/* Top Nav */}
-        <header className="discover-nav">
-          <div className="nav-inner">
-            <div className="logo">Communities Powered by The Real Africa</div>
-          </div>
-        </header>
-  
         {/* Hero */}
         <section className="discover-hero">
           <h1>Find Your People</h1>
