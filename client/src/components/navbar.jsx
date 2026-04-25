@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "../lib/authContext";
 import AccountMenu from "./AccountMenu";
@@ -8,8 +8,84 @@ import AccountMenu from "./AccountMenu";
 const Navbar = ({ onGetFeatured }) => {
   const [open, setOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
+  const [isMobileNavHidden, setIsMobileNavHidden] = useState(false);
+  const touchStartYRef = useRef(null);
+  const touchCurrentYRef = useRef(null);
+  const lastScrollYRef = useRef(0);
   const location = useLocation();
   const { user, profile } = useAuth();
+
+  const handleMenuTouchStart = (event) => {
+    const touchY = event.touches?.[0]?.clientY;
+    touchStartYRef.current = touchY ?? null;
+    touchCurrentYRef.current = touchY ?? null;
+  };
+
+  const handleMenuTouchMove = (event) => {
+    touchCurrentYRef.current = event.touches?.[0]?.clientY ?? null;
+  };
+
+  const handleMenuTouchEnd = () => {
+    if (!open || touchStartYRef.current === null || touchCurrentYRef.current === null) {
+      touchStartYRef.current = null;
+      touchCurrentYRef.current = null;
+      return;
+    }
+
+    const swipeDistance = touchStartYRef.current - touchCurrentYRef.current;
+    const closeMenuSwipeThreshold = 60;
+
+    if (swipeDistance > closeMenuSwipeThreshold) {
+      setOpen(false);
+    }
+
+    touchStartYRef.current = null;
+    touchCurrentYRef.current = null;
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.innerWidth > 900) {
+        setIsMobileNavHidden(false);
+        lastScrollYRef.current = window.scrollY;
+        return;
+      }
+
+      const currentY = window.scrollY;
+
+      if (open) {
+        setOpen(false);
+        setIsMobileNavHidden(false);
+        lastScrollYRef.current = currentY;
+        return;
+      }
+
+      if (currentY <= 8) {
+        setIsMobileNavHidden(false);
+      } else if (currentY < lastScrollYRef.current - 8) {
+        setIsMobileNavHidden(true);
+      } else if (currentY > lastScrollYRef.current + 8) {
+        setIsMobileNavHidden(false);
+      }
+
+      lastScrollYRef.current = currentY;
+    };
+
+    const handleResize = () => {
+      if (window.innerWidth > 900) {
+        setIsMobileNavHidden(false);
+      }
+    };
+
+    lastScrollYRef.current = window.scrollY;
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
+    };
+  }, [open]);
 
   
   return (
@@ -26,6 +102,7 @@ const Navbar = ({ onGetFeatured }) => {
           box-sizing: border-box;
         }
         .navbar {
+          --navbar-height: 72px;
           height: 72px;
           padding: 0 24px;
           background: linear-gradient(90deg, #1f2230 0%, #232536 100%);
@@ -271,7 +348,7 @@ const Navbar = ({ onGetFeatured }) => {
         /* Mobile dropdown */
         .mobile-menu {
           position: fixed;
-          top: 72px;
+          top: var(--navbar-height);
           left: 0;
           width: 100%;
           background: #1f2230;
@@ -287,12 +364,40 @@ const Navbar = ({ onGetFeatured }) => {
           box-sizing: border-box;
           overflow-x: hidden;
           max-width: 100vw;
+          border-radius: 0 0 16px 16px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+          box-shadow: 0 18px 32px rgba(8, 10, 18, 0.22);
         }
 
         .mobile-menu.open {
           transform: translateY(0);
           opacity: 1;
           pointer-events: auto;
+        }
+
+        .mobile-menu::after {
+          content: "";
+          position: absolute;
+          left: 24px;
+          right: 24px;
+          bottom: 10px;
+          height: 2px;
+          border-radius: 999px;
+          background: linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0) 0%,
+            rgba(255, 255, 255, 0.5) 50%,
+            rgba(255, 255, 255, 0) 100%
+          );
+          opacity: 0;
+          transform: translateY(8px);
+          transition: opacity 0.25s ease, transform 0.25s ease;
+          pointer-events: none;
+        }
+
+        .mobile-menu.open::after {
+          opacity: 1;
+          transform: translateY(0);
         }
 
         .mobile-menu a {
@@ -385,6 +490,23 @@ const Navbar = ({ onGetFeatured }) => {
 
 /* Responsive */
 @media (max-width: 900px) {
+  .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    transition: transform 0.22s ease;
+  }
+
+  .navbar.navbar--mobile-hidden {
+    transform: translateY(-100%);
+  }
+
+  .mobile-nav-spacer {
+    display: block;
+    height: var(--navbar-height);
+  }
+
   .navbar__links,
   .navbar__cta {
     display: none;
@@ -395,6 +517,7 @@ const Navbar = ({ onGetFeatured }) => {
   }
 
   .navbar {
+    --navbar-height: 60px;
     height: 60px;
     padding: 0 12px;
   }
@@ -414,7 +537,7 @@ const Navbar = ({ onGetFeatured }) => {
       `}</style>
 
       {/* Navbar */}
-      <nav className="navbar">
+      <nav className={`navbar ${isMobileNavHidden ? "navbar--mobile-hidden" : ""}`}>
        
         <Link to="/" className="navbar__logo">
           <img src="/assets/logo.png" alt="Real Africa" />
@@ -497,9 +620,16 @@ const Navbar = ({ onGetFeatured }) => {
         </div>
       </nav>
 
+      <div className="mobile-nav-spacer" />
+
 
       {/* Mobile Dropdown */}
-      <div className={`mobile-menu ${open ? "open" : ""}`}>
+      <div
+        className={`mobile-menu ${open ? "open" : ""}`}
+        onTouchStart={handleMenuTouchStart}
+        onTouchMove={handleMenuTouchMove}
+        onTouchEnd={handleMenuTouchEnd}
+      >
         <Link onClick={() => setOpen(false)} to="/">Home</Link>
         <Link onClick={() => setOpen(false)} to="/about-us">About Us</Link>
         <Link onClick={() => setOpen(false)} to="/travel">Travel</Link>

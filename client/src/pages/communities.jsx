@@ -177,18 +177,6 @@ export default function Communities() {
   
         {/* Grid */}
         <section className="grid-wrap">
-          {loading && (
-            <div style={{ display: "flex", justifyContent: "center", padding: "40px 0" }}>
-              <div style={{
-                width: 32, height: 32,
-                border: "3px solid #e5e7eb",
-                borderTopColor: "#111827",
-                borderRadius: "50%",
-                animation: "spin 0.7s linear infinite",
-              }} />
-              <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
-            </div>
-          )}
           {error && (
             <p style={{ textAlign: "center", color: "#b91c1c" }}>
               {error}
@@ -201,54 +189,68 @@ export default function Communities() {
             </p>
           )}
           <div className="community-grid">
-            {communities.map((community) => {
-              const isComingSoon =
-                Boolean(community.is_coming_soon) ||
-                community.is_active === false;
-              return (
-              <div
-                key={community.id}
-                className={`community-card ${isComingSoon ? "community-card--soon" : ""}`}
-                onClick={() => {
-                  if (community.slug && !isComingSoon) {
-                    navigate(`/communities/${community.slug}`);
-                  }
-                }}
-              >
-                <div className="card-image">
-                  <img
-                    src={community.image_url || "/assets/entrepreneurship.jpg"}
-                    alt="Community cover"
-                    className="card-img"
-                  />
-                </div>
-
-                <div className="card-body">
-                  <h3>{community.name}</h3>
-                  <p>
-                    {community.description || "A community built to learn, discuss, and grow together with like-minded people."}
-                  </p>
-                  {isComingSoon ? (
-                    <span className="community-soon">Coming soon</span>
-                  ) : (
-                    <button
-                      className="join-community-btn"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(`/communities/${community.slug}`);
+            {loading
+              ? [0, 1, 2, 3, 4, 5].map((item) => (
+                  <div key={`community-skeleton-${item}`} className="community-card community-card-skeleton" aria-hidden="true">
+                    <div className="community-skeleton community-skeleton-image" />
+                    <div className="card-body">
+                      <div className="community-skeleton community-skeleton-title" />
+                      <div className="community-skeleton community-skeleton-line" />
+                      <div className="community-skeleton community-skeleton-line short" />
+                      <div className="community-skeleton community-skeleton-button" />
+                      <div className="community-skeleton community-skeleton-meta" />
+                    </div>
+                  </div>
+                ))
+              : communities.map((community) => {
+                  const isComingSoon =
+                    Boolean(community.is_coming_soon) ||
+                    community.is_active === false;
+                  return (
+                    <div
+                      key={community.id}
+                      className={`community-card ${isComingSoon ? "community-card--soon" : ""}`}
+                      onClick={() => {
+                        if (community.slug && !isComingSoon) {
+                          navigate(`/communities/${community.slug}`);
+                        }
                       }}
                     >
-                      Learn more
-                    </button>
-                  )}
-                  <div className="card-meta">
-                    <span>{formatMembers(community.members_count)} Members</span>
-                    <span>•</span>
-                    <strong>{community.price || "Free"}</strong>
-                  </div>
-                </div>
-              </div>
-            )})}
+                      <div className="card-image">
+                        <img
+                          src={community.image_url || "/assets/entrepreneurship.jpg"}
+                          alt="Community cover"
+                          className="card-img"
+                        />
+                      </div>
+
+                      <div className="card-body">
+                        <h3>{community.name}</h3>
+                        <p>
+                          {community.description || "A community built to learn, discuss, and grow together with like-minded people."}
+                        </p>
+                        {isComingSoon ? (
+                          <span className="community-soon">Coming soon</span>
+                        ) : (
+                          <button
+                            className="join-community-btn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              navigate(`/communities/${community.slug}`);
+                            }}
+                          >
+                            Learn more
+                          </button>
+                        )}
+                        <div className="card-meta">
+                          <span>{formatMembers(community.members_count)} Members</span>
+                          <span>•</span>
+                          <strong>{community.price || "Free"}</strong>
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
           </div>
         </section>
         <section className="community-waitlist">
@@ -276,6 +278,14 @@ export default function Communities() {
         {showWaitlist && (
           <div className="waitlist-overlay" onClick={() => setShowWaitlist(false)}>
             <div className="waitlist-dialog" onClick={(e) => e.stopPropagation()}>
+              <button
+                type="button"
+                className="waitlist-close-btn"
+                onClick={() => setShowWaitlist(false)}
+                aria-label="Close waitlist form"
+              >
+                ×
+              </button>
               {waitlistSuccess ? (
                 <>
                   <h3>You're on the list!</h3>
@@ -375,6 +385,62 @@ export default function Communities() {
             pointer-events: none;
           }
 
+          .community-card-skeleton {
+            pointer-events: none;
+          }
+
+          .community-skeleton {
+            border-radius: 10px;
+            background: linear-gradient(
+              100deg,
+              rgba(148, 163, 184, 0.18) 20%,
+              rgba(148, 163, 184, 0.34) 45%,
+              rgba(148, 163, 184, 0.18) 70%
+            );
+            background-size: 240% 100%;
+            animation: community-skeleton-shimmer 1.3s ease infinite;
+          }
+
+          .community-skeleton-image {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border-radius: 12px 12px 0 0;
+          }
+
+          .community-skeleton-title {
+            width: 72%;
+            height: 22px;
+            margin-bottom: 10px;
+          }
+
+          .community-skeleton-line {
+            width: 94%;
+            height: 14px;
+            margin-bottom: 8px;
+          }
+
+          .community-skeleton-line.short {
+            width: 82%;
+            margin-bottom: 14px;
+          }
+
+          .community-skeleton-button {
+            width: 120px;
+            height: 38px;
+            border-radius: 8px;
+            margin-bottom: 14px;
+          }
+
+          .community-skeleton-meta {
+            width: 55%;
+            height: 14px;
+          }
+
+          @keyframes community-skeleton-shimmer {
+            0% { background-position: 100% 0; }
+            100% { background-position: -100% 0; }
+          }
+
           .community-soon {
             display: inline-block;
             margin-top: 12px;
@@ -424,6 +490,10 @@ export default function Communities() {
             gap: 6px;
           }
 
+          .discover-countdown {
+            display: none;
+          }
+
           .waitlist-overlay {
             position: fixed;
             inset: 0;
@@ -435,12 +505,35 @@ export default function Communities() {
           }
 
           .waitlist-dialog {
+            position: relative;
             background: #fff;
             border-radius: 16px;
             padding: 32px;
             max-width: 440px;
             width: 90%;
             text-align: left;
+          }
+
+          .waitlist-close-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            width: 32px;
+            height: 32px;
+            border: none;
+            border-radius: 999px;
+            background: #f3f4f6;
+            color: #111827;
+            font-size: 22px;
+            line-height: 1;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+          }
+
+          .waitlist-close-btn:hover {
+            background: #e5e7eb;
           }
 
           .waitlist-dialog h3 {

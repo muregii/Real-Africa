@@ -1,17 +1,52 @@
 import React from 'react';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import GetFeatured from "../components/get-featured";
 
 function Hero() {
   const [open, setOpen] = useState(false);
+  const [isHeroReady, setIsHeroReady] = useState(false);
+  const heroImageUrl = "/assets/hero_image.jpg";
+
+  useEffect(() => {
+    const image = new Image();
+    image.src = heroImageUrl;
+
+    const markReady = () => setIsHeroReady(true);
+    image.onload = markReady;
+    image.onerror = markReady;
+
+    return () => {
+      image.onload = null;
+      image.onerror = null;
+    };
+  }, []);
 
   return (
     <>
+    <style>{`
+      .hero-skeleton-block {
+        border-radius: 12px;
+        background: linear-gradient(
+          100deg,
+          rgba(255, 255, 255, 0.08) 20%,
+          rgba(255, 255, 255, 0.2) 45%,
+          rgba(255, 255, 255, 0.08) 70%
+        );
+        background-size: 240% 100%;
+        animation: hero-shimmer 1.4s ease infinite;
+      }
+
+      @keyframes hero-shimmer {
+        0% { background-position: 100% 0; }
+        100% { background-position: -100% 0; }
+      }
+    `}</style>
     <section
       style={{
         minHeight: "100vh",
         position: "relative",
-        backgroundImage: "url('/assets/hero_image.jpg')",
+        backgroundImage: isHeroReady ? `url('${heroImageUrl}')` : "none",
+        backgroundColor: "#1f2230",
         backgroundSize: "cover",
         backgroundPosition: "center",
         display: "flex",
@@ -33,6 +68,28 @@ function Hero() {
         }}
       />
 
+      {!isHeroReady && (
+        <div
+          style={{
+            position: "relative",
+            zIndex: 1,
+            width: "min(900px, 100%)",
+            display: "flex",
+            flexDirection: "column",
+            marginTop: "-10vh",
+            gap: "16px",
+          }}
+          aria-hidden="true"
+        >
+          <div className="hero-skeleton-block" style={{ height: 16, width: "38%" }} />
+          <div className="hero-skeleton-block" style={{ height: 64, width: "92%", borderRadius: 16 }} />
+          <div className="hero-skeleton-block" style={{ height: 18, width: "45%" }} />
+          <div className="hero-skeleton-block" style={{ height: 16, width: "88%" }} />
+          <div className="hero-skeleton-block" style={{ height: 16, width: "78%" }} />
+          <div className="hero-skeleton-block" style={{ height: 52, width: 210, borderRadius: 999 }} />
+        </div>
+      )}
+
       {/* Content */}
       <div
         style={{
@@ -43,6 +100,8 @@ function Hero() {
           flexDirection: "column",
           marginTop: "-10vh",
           gap: "16px",
+          opacity: isHeroReady ? 1 : 0,
+          transition: "opacity 0.22s ease",
         }}
       >
         {/* Posted By */}
