@@ -345,7 +345,7 @@ const Footer = () => {
             <a href="https://instagram.com/therealafrica" target="_blank" rel="noreferrer" aria-label="Instagram">
               <FaInstagram />
             </a>
-            <a href="https://linkedin.com/company/therealafrica" target="_blank" rel="noreferrer" aria-label="LinkedIn">
+            <a href="https://www.linkedin.com/company/the-real-africa/" target="_blank" rel="noreferrer" aria-label="LinkedIn">
               <FaLinkedin />
             </a>
             <a href="https://youtube.com/@therealafrica" target="_blank" rel="noreferrer" aria-label="YouTube">
