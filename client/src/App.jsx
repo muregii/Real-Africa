@@ -10,6 +10,7 @@ import Categories from './pages/categories/opportunities';
 import FeaturedCEOs from './pages/categories/features-ceos';
 import InterviewSelect from './pages/interview-detail';
 import ArticlesPage from './pages/Articles';
+import FreelanceStoryContributor from './pages/FreelanceStoryContributor';
 import Technology from './pages/categories/technology';
 import { useAuth } from "./lib/authContext";
 import Auth from "./pages/Auth";
@@ -97,6 +98,7 @@ function App() {
             </ProtectedRoute>} />
           <Route path="/interviews" element={<InterviewPage />} />
           <Route path="/articles" element={<ArticlesPage />} />
+          <Route path="/articles/freelance-story-contributor" element={<FreelanceStoryContributor />} />
           <Route path="/communities" element={<Communities />} />
           <Route path="/opportunities" element={<Categories />} />
           <Route path="/featured-ceos" element={<FeaturedCEOs />} />

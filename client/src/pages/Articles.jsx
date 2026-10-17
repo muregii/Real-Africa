@@ -172,6 +172,25 @@ export default function Articles() {
       </div>
 
       <div className="gallery-grid">
+        <Link
+          to="/articles/freelance-story-contributor"
+          className="gallery-card"
+        >
+          <div className="gallery-card__img-wrap" style={{ background: "#eeebfa", display: "flex", alignItems: "center", justifyContent: "center", padding: 28 }}>
+            <span style={{ color: "#3f3179", fontSize: "clamp(26px, 3vw, 38px)", fontWeight: 700, lineHeight: 1.15, textAlign: "center" }}>
+              Tell the story others missed.
+            </span>
+            <div className="gallery-card__badge">Opportunity</div>
+          </div>
+          <div className="gallery-card__body">
+            <div className="gallery-card__meta">The Real Africa · Rolling call</div>
+            <h3 className="gallery-card__title">Freelance Story Contributors wanted</h3>
+            <p className="gallery-card__summary">
+              Pitch an African founder story worth a closer look. Paid assignments, byline, and an open call to contributors anywhere.
+            </p>
+            <span className="gallery-card__read">Read the opportunity →</span>
+          </div>
+        </Link>
         {articles.map((item) => (
           <Link
             key={item.slug}
