@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const JOBS = [
   { title: "Software Engineer", type: "Part Time", location: "South Africa", category: "Developer" },
@@ -111,10 +111,58 @@ const Categories = () => {
           position: relative;
         }
 
-        .opps-card {
+        .opps-jobs .opps-card {
           opacity: 0.5;
           pointer-events: none;
           user-select: none;
+        }
+
+        .opps-card--open {
+          margin-bottom: 36px;
+          border-color: #e3cc9c;
+          box-shadow: 0 8px 30px rgba(31, 34, 48, 0.06);
+        }
+
+        .opps-card--open .opps-card__category {
+          color: #475569;
+          font-size: 14px;
+          line-height: 1.6;
+        }
+
+        .opps-card__details {
+          color: #475569;
+          font-size: 14px;
+          line-height: 1.6;
+          margin: 0;
+        }
+
+        .opps-card__actions {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 12px;
+          margin-top: 4px;
+        }
+
+        .opps-card__actions a {
+          align-items: center;
+          display: inline-flex;
+          justify-content: center;
+          min-height: 42px;
+          padding: 0 18px;
+          border-radius: 10px;
+          font-size: 14px;
+          font-weight: 600;
+          text-decoration: none;
+        }
+
+        .opps-card__actions a:first-child {
+          background: #1f2230;
+          color: #ffffff;
+        }
+
+        .opps-card__actions a:last-child {
+          border: 1px solid #1f2230;
+          color: #1f2230;
         }
 
         .opps-card__tags {
@@ -401,7 +449,30 @@ const Categories = () => {
       <div className="opps-layout">
         {/* Main */}
         <div className="opps-main">
-          <h2>Featured Jobs</h2>
+          <h2>Open opportunity</h2>
+
+          <article className="opps-card opps-card--open">
+            <div className="opps-card__tags">
+              <span className="opps-card__tag opps-card__tag--type">Paid freelance assignment</span>
+              <span className="opps-card__tag opps-card__tag--location">Open worldwide · Remote</span>
+            </div>
+            <h3 className="opps-card__title">Freelance Story Contributor</h3>
+            <p className="opps-card__category">
+              Pitch an underreported African founder story for The Real Africa.
+              Assignments are agreed story by story, with a fee offered after proposal approval.
+            </p>
+            <p className="opps-card__details">
+              Rolling call · Pitch and write in your preferred language · Byline and portfolio use
+            </p>
+            <div className="opps-card__actions">
+              <a href="https://forms.gle/8ne2SfFkss36xSq9A" target="_blank" rel="noopener noreferrer">
+                Submit a proposal ↗
+              </a>
+              <Link to="/articles/freelance-story-contributor">Read the full opportunity</Link>
+            </div>
+          </article>
+
+          <h2>More opportunities coming soon</h2>
 
           <div className="opps-jobs">
             {JOBS.map((job, i) => (
