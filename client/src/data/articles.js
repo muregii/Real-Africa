@@ -4,14 +4,18 @@ export const articles = [
     title: "The Sleeping Giant: Why Africa Imports Food It Could Grow Itself",
     author: "The Real Africa",
     date: "November 21, 2026",
-    heroImage: "/assets/sleeping-giant-farms.svg",
+    heroImage: "/assets/sleeping-giant-farmer.jpg",
+    heroShape: "banner",
+    heroImageAlt: "A farmer in Morogoro, Tanzania, holding freshly harvested corn in his field.",
+    heroImageCredit: "Joseph K. Masonda on Pexels",
+    heroImageCreditUrl: "https://www.pexels.com/photo/farmer-holding-corns-13042951/",
     summary:
-      "Sub-Saharan Africa could grow two to three times more cereals and grains. The opportunity lies in smallholder productivity, stronger supply chains, and products built for local farmers.",
-    body: `Sub-Saharan Africa could grow two to three times more cereals and grains than it does today. So why does it still import $15 billion in food crops?
+      "Unlocking African agriculture means helping smallholder farmers raise yields and reach markets—not simply expanding farmland.",
+    body: `Sub-Saharan Africa could grow two to three times more cereals and grains than it does today, yet it imports $15 billion worth of food crops, mostly from Asia and South America.
 
-Start with the paradox. Agriculture makes up about 23 percent of sub-Saharan Africa's GDP, and more than 60 percent of the region's people are smallholder farmers. Farming is the economy here. Yet the region still buys $15 billion worth of grains, edible oils and sugar from abroad, mostly from Asia and South America.
+That contrast matters in a region where agriculture makes up about 23 percent of GDP and more than 60 percent of the population works as smallholder farmers. Much of the opportunity lies with the people already farming the land, and in whether they can get the right inputs, financing and routes to market.
 
-According to McKinsey & Company's report [Winning in Africa's agricultural market](https://www.mckinsey.com/industries/agriculture/our-insights/winning-in-africas-agricultural-market), the region could produce two to three times more cereals and grains with better farming practices. The distance between what Africa grows and what it could grow is one of the largest untapped opportunities in the global food system. Closing it will take a different playbook from the one investors have relied on for decades.
+McKinsey & Company's report [Winning in Africa's agricultural market](https://www.mckinsey.com/industries/agriculture/our-insights/winning-in-africas-agricultural-market) points to better farming practices as a way to close that gap. Its analysis shifts the focus from the promise of vast new farmland to a more practical question: what would help existing farms produce and sell more?
 
 ## The land myth
 

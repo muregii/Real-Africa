@@ -121,8 +121,22 @@ const InterviewSelect = () => {
           interview.heroShape === "banner" ? " interview-hero--banner" : ""
         }`}
       >
-        <img src={interview.heroImage} alt={interview.title} />
+        <img src={interview.heroImage} alt={interview.heroImageAlt || interview.title} />
       </div>
+      {interview.heroImageCredit && (
+        <p
+          style={{
+            maxWidth: 920,
+            margin: "-1.5rem auto 2.5rem",
+            padding: "0 12px",
+            textAlign: "right",
+            fontSize: 12,
+            color: "#6b7280",
+          }}
+        >
+          Photo: <a href={interview.heroImageCreditUrl} target="_blank" rel="noopener noreferrer">{interview.heroImageCredit}</a>
+        </p>
+      )}
 
       {/* Article Body */}
       <MarkdownErrorBoundary fallbackText={interview.body}>
