@@ -1,6 +1,9 @@
-import React from "react";
-import { useParams, Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useParams, Link, useLocation } from "react-router-dom";
 import { interviews } from "../data/interviews";
+import { articles as newArticles } from "../data/articles";
+import { ARTICLE_VIEW_SLUGS, recordArticleRead } from "../lib/articleViews";
+import ArticleReadCount from "../components/ArticleReadCount";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 
@@ -34,7 +37,20 @@ class MarkdownErrorBoundary extends React.Component {
 
 const InterviewSelect = () => {
   const { slug } = useParams();
-  const interview = interviews.find((item) => item.slug === slug);
+  const location = useLocation();
+  const interview = [...interviews, ...newArticles].find((item) => item.slug === slug);
+  const [viewCount, setViewCount] = useState(null);
+
+  useEffect(() => {
+    let active = true;
+    setViewCount(null);
+    if (location.pathname.startsWith("/articles/") && ARTICLE_VIEW_SLUGS.includes(slug)) {
+      recordArticleRead(slug)
+        .then((count) => { if (active) setViewCount(count); })
+        .catch(() => {});
+    }
+    return () => { active = false; };
+  }, [slug, location.pathname]);
 
   if (!interview) {
     return (
@@ -82,6 +98,9 @@ const InterviewSelect = () => {
           <div className="interview-meta">
             <span className="interview-author">{interview.author}</span>
             <span className="interview-date">Posted on {interview.date}</span>
+            {location.pathname.startsWith("/articles/") && ARTICLE_VIEW_SLUGS.includes(slug) && (
+              <ArticleReadCount count={viewCount} />
+            )}
           </div>
 
           {/* Center: Title */}

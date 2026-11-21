@@ -1,6 +1,9 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { interviews } from "../data/interviews";
+import { articles as newArticles } from "../data/articles";
+import { getArticleViewCounts } from "../lib/articleViews";
+import ArticleReadCount from "../components/ArticleReadCount";
 
 const ARTICLE_SLUGS = [
   "what-bigs-1-5-million-raise-means-for-africa",
@@ -9,9 +12,22 @@ const ARTICLE_SLUGS = [
   "curiosity-to-inclusion-elly-savatia",
   "navigating-borders-g-o-ouma",
 ];
-const articles = ARTICLE_SLUGS.map(s => interviews.find(i => i.slug === s)).filter(Boolean);
+const articles = [
+  ...newArticles,
+  ...ARTICLE_SLUGS.map(s => interviews.find(i => i.slug === s)).filter(Boolean),
+];
 
 export default function Articles() {
+  const [viewCounts, setViewCounts] = useState({});
+
+  useEffect(() => {
+    let active = true;
+    getArticleViewCounts(articles.map((item) => item.slug))
+      .then((counts) => { if (active) setViewCounts(counts); })
+      .catch(() => {});
+    return () => { active = false; };
+  }, []);
+
   return (
     <section className="gallery-articles">
       <style>{`
@@ -208,6 +224,7 @@ export default function Articles() {
               </div>
               <h3 className="gallery-card__title">{item.title}</h3>
               <p className="gallery-card__summary">{item.summary}</p>
+              <ArticleReadCount count={viewCounts[item.slug]} />
               <div className="gallery-card__read">
                 Read article
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
